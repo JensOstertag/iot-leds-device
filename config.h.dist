@@ -1,0 +1,8 @@
+#define WEB_HOST "https://localhost:3000"
+#define DEV_UID "DEV_UID"
+#define DEV_API_KEY "DEV_API_KEY"
+
+#define WIFI_SSID "SSID"
+#define WIFI_PASSWORD "PASSWORD"
+
+#define LED_AMOUNT 180
