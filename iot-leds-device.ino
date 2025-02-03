@@ -8,7 +8,13 @@ void setup() {
   setupWiFiConnection();
   setupFrameHandling();
 
+  long start = millis();
   fetch();
+  long end = millis();
+  long duration = end - start;
+  Serial.print("Done, took ");
+  Serial.print(duration);
+  Serial.println(" ms");
 }
 
 void loop() {
