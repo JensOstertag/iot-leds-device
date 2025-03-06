@@ -23,3 +23,20 @@ struct Animation {
 
   Animation(const int id, const String animationType, const Color colors[], const int durationPerColor) : id(id), animationType(animationType), colors(colors), durationPerColor(durationPerColor) {}
 };
+
+Color parseColor(JsonObject colorObject) {
+  
+}
+
+Animation parseAnimation(JsonObject animationObject) {
+  int id = animationObject["id"];
+  const char* name = animationObject["name"];
+  const char* type = animationObject["type"];
+  JsonArray colorObjects = animationObject["colors"];
+  float durationPerColor = animationObject["durationPerColor"];
+  Color* colors[colorObjects.size()];
+
+  for(JsonVariant colorObject : colorObjects) {
+    serializeJsonPretty(colorObject, Serial);
+  }
+}
