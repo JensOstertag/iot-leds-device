@@ -47,7 +47,7 @@ void handleHttpConnection(HTTPClient *httpClient) {
     return;
   }
 
-  // TODO: Parse animation
+  // Parse animation
   Animation animation = parseAnimation(response["data"]["animation"]);
 }
 

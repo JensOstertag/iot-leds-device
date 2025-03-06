@@ -1,42 +1,37 @@
-struct RgbColor {
-  const int r;
-  const int g;
-  const int b;
+class Animation {
+  public:
+    int id;
+    String animationType;
+    int durationPerColor;
+    int colorAmount;
+    int colors[MAX_COLORS_PER_ANIMATION][3];
 
-  RgbColor(unsigned const int r, unsigned const int g, unsigned const int b) : r(r), g(g), b(b) {}
+    float animationProgress = 0;
 };
-
-struct Color {
-  const String hexColor;
-  const RgbColor rgbColor;
-
-  Color(const String hexColor, const RgbColor rgbColor) : hexColor(hexColor), rgbColor(rgbColor) {}
-};
-
-struct Animation {
-  const int id;
-  const String animationType;
-  const Color* colors;
-  const int durationPerColor;
-
-  float animationProgress = 0;
-
-  Animation(const int id, const String animationType, const Color colors[], const int durationPerColor) : id(id), animationType(animationType), colors(colors), durationPerColor(durationPerColor) {}
-};
-
-Color parseColor(JsonObject colorObject) {
-  
-}
 
 Animation parseAnimation(JsonObject animationObject) {
-  int id = animationObject["id"];
-  const char* name = animationObject["name"];
-  const char* type = animationObject["type"];
+  Animation animation;
+  animation.id = animationObject["id"].as<int>();
+  animation.animationType = String(animationObject["type"].as<const char*>());
+  animation.durationPerColor = animationObject["durationPerColor"].as<float>();
   JsonArray colorObjects = animationObject["colors"];
-  float durationPerColor = animationObject["durationPerColor"];
-  Color* colors[colorObjects.size()];
-
-  for(JsonVariant colorObject : colorObjects) {
-    serializeJsonPretty(colorObject, Serial);
+  animation.colorAmount = colorObjects.size();
+  if(animation.colorAmount > MAX_COLORS_PER_ANIMATION) {
+    animation.colorAmount = MAX_COLORS_PER_ANIMATION;
   }
+
+  int i = 0;
+  for(JsonVariant colorObject : colorObjects) {
+    if(i >= animation.colorAmount) {
+      break;
+    }
+
+    animation.colors[i][0] = colorObject["rgb"]["r"].as<int>();
+    animation.colors[i][1] = colorObject["rgb"]["g"].as<int>();
+    animation.colors[i][2] = colorObject["rgb"]["b"].as<int>();
+
+    i++;
+  }
+
+  return animation;
 }
