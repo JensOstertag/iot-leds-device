@@ -1,39 +1,31 @@
-class Animation {
-  public:
-    int id;
-    String animationType;
-    int durationPerColor;
-    int colorAmount;
-    int colors[MAX_COLORS_PER_ANIMATION][3];
+int ad_Id;
+String ad_Type;
+int ad_DurationPerColor;
+int ad_ColorAmount;
+int ad_Colors[MAX_COLORS_PER_ANIMATION][3];
 
-    float animationProgress = 0;
-};
-
-Animation parseAnimation(JsonObject animationObject) {
-  Animation animation;
-  animation.id = animationObject["id"].as<int>();
-  animation.animationType = String(animationObject["type"].as<const char*>());
-  animation.durationPerColor = animationObject["durationPerColor"].as<float>();
+void parseAnimation(JsonObject animationObject) {
+  ad_Id = animationObject["id"].as<int>();
+  ad_Type = String(animationObject["type"].as<const char*>());
+  ad_DurationPerColor = animationObject["durationPerColor"].as<float>();
   JsonArray colorObjects = animationObject["colors"];
-  animation.colorAmount = colorObjects.size();
-  if(animation.colorAmount > MAX_COLORS_PER_ANIMATION) {
-    animation.colorAmount = MAX_COLORS_PER_ANIMATION;
+  ad_ColorAmount = colorObjects.size();
+  if(ad_ColorAmount > MAX_COLORS_PER_ANIMATION) {
+    ad_ColorAmount = MAX_COLORS_PER_ANIMATION;
   }
 
   int i = 0;
   for(JsonVariant colorObject : colorObjects) {
-    if(i >= animation.colorAmount) {
+    if(i >= ad_ColorAmount) {
       break;
     }
 
-    animation.colors[i][0] = colorObject["rgb"]["r"].as<int>();
-    animation.colors[i][1] = colorObject["rgb"]["g"].as<int>();
-    animation.colors[i][2] = colorObject["rgb"]["b"].as<int>();
+    ad_Colors[i][0] = colorObject["rgb"]["r"].as<int>();
+    ad_Colors[i][1] = colorObject["rgb"]["g"].as<int>();
+    ad_Colors[i][2] = colorObject["rgb"]["b"].as<int>();
 
     i++;
   }
-
-  return animation;
 }
 
 void fetchAnimation() {
@@ -71,7 +63,7 @@ void fetchAnimation() {
   Serial.println("CP4");
 
   // Parse animation
-  Animation animation = parseAnimation(response["data"]["animation"]);
+  parseAnimation(response["data"]["animation"]);
 
   Serial.println("CP5");
 }

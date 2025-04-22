@@ -1,8 +1,8 @@
 #include <ArduinoJson.h> // https://github.com/bblanchon/ArduinoJson
 #include "config.h"
-#include "apiconnection.h"
-#include "animations.h"
-#include "framehandling.h"
+#include "APIConnection.h"
+#include "AnimationData.h"
+#include "FrameHandling.h"
 
 void setup() {
   Serial.begin(115200);
