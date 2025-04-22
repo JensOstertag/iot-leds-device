@@ -16,62 +16,63 @@ void setupWiFiConnection() {
   Serial.println(WiFi.localIP());
 }
 
-void handleHttpConnection(HTTPClient *httpClient) {
-  // Build POST payload
-  JsonDocument postData;
-  postData["deviceUid"] = DEV_UID;
-  postData["deviceApiKey"] = DEV_API_KEY;
+JsonDocument fetchHttps(String endpoint,String payload) {
+  HTTPClient httpClient;
+  WiFiClientSecure wifiClient;
+  wifiClient.setInsecure();
+  JsonDocument emptyResponse;
 
-  String requestPayload;
-  serializeJson(postData, requestPayload);
+  if(httpClient.begin(wifiClient, endpoint)) {
+    // Send request
+    int httpCode = httpClient.POST(payload);
 
-  // Send request
-  int httpCode = httpClient->POST(requestPayload);
+    // Build response
+    JsonDocument response;
+    DeserializationError deserializationError = deserializeJson(response, httpClient.getString());
 
-  // Build response
-  JsonDocument response;
-  DeserializationError deserializationError = deserializeJson(response, httpClient->getString());
+    if(deserializationError) {
+      Serial.println("An error occurred whilst attempting to deserialize API response:");
+      Serial.println(httpClient.getString());
+      return emptyResponse;
+    }
 
-  if(deserializationError) {
-    Serial.println("An error occurred whilst attempting to deserialize API response:");
-    Serial.println(httpClient->getString());
-    return;
+    return response;
   }
 
-  if(response["code"] != 200) {
-    Serial.print("An error occurred whilst attempting to fetch the API. Received error code ");
-    Serial.print(response["code"].as<int>());
-    Serial.print(" (");
-    Serial.print(response["message"].as<const char*>());
-    Serial.println(").");
-    return;
-  }
-
-  // Parse animation
-  Animation animation = parseAnimation(response["data"]["animation"]);
+  return emptyResponse;
 }
 
-void fetch() {
+JsonDocument fetchHttp(String endpoint, String payload) {
   HTTPClient httpClient;
+  WiFiClient wifiClient;
+  JsonDocument emptyResponse;
 
-  if(String(WEB_HOST).startsWith("https")) {
-    WiFiClientSecure wifiClient;
-    wifiClient.setInsecure();
+  Serial.println("S1");
 
-    if(httpClient.begin(wifiClient, String(WEB_HOST) + "/api/get-device-animation")) {
-      handleHttpConnection(&httpClient);
-    } else {
-      Serial.println("failed");
+  if(httpClient.begin(wifiClient, endpoint)) {
+    Serial.println("S2");
+    // Send request
+    int httpCode = httpClient.POST(payload);
+
+    Serial.println("S3");
+
+    // Build response
+    JsonDocument response;
+    DeserializationError deserializationError = deserializeJson(response, httpClient.getString());
+    Serial.println("S4");
+
+    if(deserializationError) {
+      Serial.println("An error occurred whilst attempting to deserialize API response:");
+      Serial.println(httpClient.getString());
+      return emptyResponse;
     }
-  } else {
-    WiFiClient wifiClient;
 
-    if(httpClient.begin(wifiClient, String(WEB_HOST) + "/api/get-device-animation")) {
-      handleHttpConnection(&httpClient);
-    } else {
-      Serial.println("failed");
-    }
+    Serial.println("S5");
+
+    return response;
   }
 
-  httpClient.end();
+  Serial.println("S6");
+
+  return emptyResponse;
 }

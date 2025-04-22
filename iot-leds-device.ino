@@ -1,8 +1,8 @@
 #include <ArduinoJson.h> // https://github.com/bblanchon/ArduinoJson
 #include "config.h"
+#include "apiconnection.h"
 #include "animations.h"
 #include "framehandling.h"
-#include "apiconnection.h"
 
 void setup() {
   Serial.begin(115200);
@@ -10,7 +10,7 @@ void setup() {
   setupFrameHandling();
 
   long start = millis();
-  fetch();
+  fetchAnimation();
   long end = millis();
   long duration = end - start;
   Serial.print("Done, took ");
