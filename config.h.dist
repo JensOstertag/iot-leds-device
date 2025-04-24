@@ -1,4 +1,10 @@
-#define WEB_HOST "https://localhost:3000"
+#define WEB_SECURE false
+#define WEB_HOST "localhost"
+#define WEB_PORT 3000
+#define WS_SECURE false
+#define WS_HOST "localhost"
+#define WS_PORT 5222
+#define WS_CHANNEL "iot-leds"
 #define DEV_UID "DEV_UID"
 #define DEV_API_KEY "DEV_API_KEY"
 
@@ -6,3 +12,6 @@
 #define WIFI_PASSWORD "PASSWORD"
 
 #define LED_AMOUNT 180
+#define MAX_COLORS_PER_ANIMATION 128
+
+#define TIMEOUT_DURATION 1800000 // 30 * 60 * 1000 ms
