@@ -17,8 +17,8 @@ void frameHandling() {
   fh_DeltaTime = ((float) durationOfLastLoop) / ((float) 1000);
   fh_LastTime = millis();
 
-  Serial.print("DeltaTime: ");
-  Serial.print(deltaTime());
-  Serial.print(" --- FPS: ");
-  Serial.println(1 / deltaTime());
+  // Serial.print("DeltaTime: ");
+  // Serial.print(deltaTime());
+  // Serial.print(" --- FPS: ");
+  // Serial.println(1 / deltaTime());
 }
