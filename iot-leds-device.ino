@@ -14,13 +14,13 @@ void setup() {
   setupFrameHandling();
   setupRenderer();
   setupExceptionVisualizer();
-  // setupWiFiConnection();
-  // setupWSConnection();
+  setupWiFiConnection();
+  setupWSConnection();
 }
 
 void loop() {
   frameHandling();
-  // maintainWSConnection();
-  // checkError();
+  maintainWSConnection();
+  checkError();
   render();
 }

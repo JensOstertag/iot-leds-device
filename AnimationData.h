@@ -50,9 +50,6 @@ void parseAnimation(JsonObject payload) {
     ad_ColorAmount = MAX_COLORS_PER_ANIMATION;
   }
 
-  Serial.print("colors: ");
-  Serial.println(colorObjects.size());
-
   int i = 0;
   for(JsonVariant colorObject : colorObjects) {
     if(i >= ad_ColorAmount) {
@@ -63,33 +60,17 @@ void parseAnimation(JsonObject payload) {
     ad_Colors[i][1] = colorObject["rgb"]["g"].as<int>();
     ad_Colors[i][2] = colorObject["rgb"]["b"].as<int>();
 
-    Serial.print(ad_Colors[i][0]);
-    Serial.print(" - ");
-    Serial.print(ad_Colors[i][1]);
-    Serial.print(" - ");
-    Serial.println(ad_Colors[i][2]);
-
     i++;
   }
 }
 
 void render() {
-  Serial.print("OLD: ");
-  Serial.print(ad_CurrentColor);
   float oldColor = ad_CurrentColor;
   float progressDuringFrame = 0;
-  Serial.print(" - DT: ");
-  Serial.print(deltaTime());
-  Serial.print(" - DUR: ");
-  Serial.print(ad_DurationPerColor);
   if(ad_DurationPerColor != 0) {
     progressDuringFrame = deltaTime() / float(ad_DurationPerColor);
   }
-  Serial.print(" - PROG: ");
-  Serial.print(progressDuringFrame);
   float newColor = oldColor + progressDuringFrame;
-  Serial.print(" - NEW: ");
-  Serial.println(newColor);
   while(newColor >= ad_ColorAmount) {
     newColor -= ad_ColorAmount;
   }
@@ -108,6 +89,42 @@ void render() {
     int targetB = ad_Colors[fromColor][2];
 
     for(int i = 0; i < ledStrip.numPixels(); i++) {
+      ledStrip.setPixelColor(i, ledStrip.Color(
+        targetR,
+        targetG,
+        targetB
+      ));
+    }
+
+    ledStrip.show();
+  } else if(ad_Type.equals("SLIDE")) {
+    float progressPerLed = float(ad_ColorAmount) / float(ledStrip.numPixels());
+
+    float ledProgress = ad_CurrentColor;
+    for(int i = 0; i < ledStrip.numPixels(); i++) {
+      if(i > 0) {
+        ledProgress += progressPerLed;
+        while(ledProgress >= ad_ColorAmount) {
+          ledProgress -= ad_ColorAmount;
+        }
+      }
+
+      int fromColor = int(ledProgress) % ad_ColorAmount;
+      int toColor = (fromColor + 1) % ad_ColorAmount;
+      float colorProgress = ledProgress - fromColor;
+
+      int fromR = ad_Colors[fromColor][0];
+      int fromG = ad_Colors[fromColor][1];
+      int fromB = ad_Colors[fromColor][2];
+
+      int toR = ad_Colors[toColor][0];
+      int toG = ad_Colors[toColor][1];
+      int toB = ad_Colors[toColor][2];
+
+      int targetR = ratio(fromR, toR, colorProgress);
+      int targetG = ratio(fromG, toG, colorProgress);
+      int targetB = ratio(fromB, toB, colorProgress);
+
       ledStrip.setPixelColor(i, ledStrip.Color(
         targetR,
         targetG,

@@ -39,7 +39,21 @@ void setErrorAnimation() {
     return;
   }
 
-  // TODO: Red pulse
+  // Red pulse
+  // Blue pulse
+  JsonDocument document;
+  JsonObject data = document.to<JsonObject>();
+  JsonObject animation = data.createNestedObject("animation");
+  animation["id"] = 0;
+  animation["name"] = "STARTUP";
+  animation["type"] = "PULSE";
+  JsonArray colors = animation.createNestedArray("colors");
+  fakeColor(colors, 255, 0, 0);
+  fakeColor(colors, 31, 0, 0);
+  animation["durationPerColor"] = 3;
+  data["power"] = true;
+
+  parseAnimation(data);
 
   ev_ErrorAnimation = true;
 }
