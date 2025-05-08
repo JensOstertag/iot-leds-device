@@ -45,8 +45,6 @@ void onMessageCallback(WebsocketsMessage websocketsMessage) {
       Serial.print("WebSocket UUID: ");
       Serial.println(uuid);
       subscribeToChannel();
-    } else if(message.equals("Subscribed")) {
-      sendSubscriptionConfirmation(uuid);
     }
   } else if(messageType.equals("CLIENT_PUSH")) {
     String pushChannel = payload["data"]["pushMessage"]["channel"].as<const char*>();
