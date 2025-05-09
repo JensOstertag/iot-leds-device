@@ -1,4 +1,5 @@
 #include <AESLib.h>
+#include <base64.hpp>
 
 AESLib aesLib;
 
@@ -6,21 +7,31 @@ byte AES_KEY[KEY_BYTES];
 byte AES_IV[IV_BYTES];
 
 void setupEncryption() {
+  Serial.println("Key: ");
   for(int i = 0; i < KEY_BYTES; i++) {
-    if(String(DEV_API_KEY).length() >= i - 1) {
+    if(String(DEV_API_KEY).length() > i) {
       AES_KEY[i] = (byte) DEV_API_KEY[i];
     } else {
       AES_KEY[i] = 0x00;
     }
-  }
 
+    Serial.print(AES_KEY[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+
+Serial.println("IV: ");
   for(int i = 0; i < IV_BYTES; i++) {
-    if(String(DEV_UID).length() >= i - 1) {
+    if(String(DEV_UID).length() > i) {
       AES_IV[i] = (byte) DEV_UID[i];
     } else {
       AES_IV[i] = 0x00;
     }
+
+    Serial.print(AES_IV[i], HEX);
+    Serial.print(" ");
   }
+  Serial.println();
 }
 
 String decodeBase64(String encoded) {
@@ -44,7 +55,7 @@ String decryptAes(String ciphertext) {
   ciphertext.getBytes(ciphertextBytes, ciphertext.length() + 1);
 
   byte decryptingBuffer[ciphertext.length()];
-  int decryptedLength = aesLib.decrypt(ciphertextBytes, sizeof(ciphertextBytes), decryptingBuffer, aes_key, sizeof(aes_key), aes_iv);
+  int decryptedLength = aesLib.decrypt(ciphertextBytes, sizeof(ciphertextBytes), decryptingBuffer, AES_KEY, sizeof(AES_KEY), AES_IV);
 
   int length = sizeof(decryptingBuffer);
   for(int i = sizeof(decryptingBuffer) - 1; i >= 0; i--) {

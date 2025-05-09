@@ -21,7 +21,7 @@ Thus, the firmware can be flashed to the microcontroller using the Arduino IDE.
 
 The counterpart to this software, the web application ([JensOstertag/iot-leds-web](https://github.com/JensOstertag/iot-leds-web)), allows users to create their own animations.
 
-During runtime, the device connects to a WiFi network, establishes a WebSocket connection to a push server ([JensOstertag/WS-PushServer](https://github.com/JensOstertag/WS-PushServer)), sends the UUID to the web application via its REST API, and then listens for incoming messages.
+During runtime, the device connects to a WiFi network, establishes a WebSocket connection to a push server ([JensOstertag/WS-PushServer](https://github.com/JensOstertag/WS-PushServer)) and then listens for incoming messages.
 The server pushes the animation information in real-time to the device once it is connected or when the user changes the animation in the web application.
 
 ## Dependencies
@@ -30,6 +30,8 @@ The following tools and libraries are used:
 - **ESP8266WiFi** - GitHub: [esp8266/Arduino](https://github.com/esp8266/Arduino), licensed under [LGPL-2.1 license](https://github.com/esp8266/Arduino/blob/master/LICENSE)
 - **ArduinoWebsockets** - GitHub: [gilmaimon/ArduinoWebsockets](https://github.com/gilmaimon/ArduinoWebsockets), licensed under [GPL-3.0 license](https://github.com/gilmaimon/ArduinoWebsockets/blob/master/LICENSE)
 - **ArduinoJson** - GitHub: [bblanchon/ArduinoJson](https://github.com/bblanchon/ArduinoJson), licensed under [MIT license](https://github.com/bblanchon/ArduinoJson/blob/7.x/LICENSE.txt)
+- **AESLib** - GitHub: [DavyLandman/AESLib](https://github.com/DavyLandman/AESLib), licensed under [GPL-3.0 license](https://github.com/DavyLandman/AESLib/blob/master/LICENSE)
+- **base64** - GitHub: [Densaugeo/base64_arduino](https://github.com/Densaugeo/base64_arduino), licensed under [MIT license](https://github.com/Densaugeo/base64_arduino/blob/master/LICENSE)
 
 ## License
 This software is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

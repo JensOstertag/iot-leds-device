@@ -5,6 +5,14 @@ using namespace websockets;
 WebsocketsClient websocketsClient;
 String uuid = "";
 
+bool newMessage = false;
+String messageBuffer;
+
+void onMessageCallback(WebsocketsMessage websocketsMessage) {
+  messageBuffer = String(websocketsMessage.c_str());
+  newMessage = true;
+}
+
 void subscribeToChannel() {
   Serial.println("Subscribing to WebSocket channel...");
 
@@ -22,14 +30,18 @@ void subscribeToChannel() {
   Serial.println("Sent WebSocket channel subscription request");
 }
 
-void onMessageCallback(WebsocketsMessage websocketsMessage) {
-  String rawMessage = websocketsMessage.data();
+void handleBufferedWebsocketsMessage() {
+  if(!newMessage) {
+    return;
+  }
+
   JsonDocument payload;
-  DeserializationError deserializationError = deserializeJson(payload, rawMessage);
+  DeserializationError deserializationError = deserializeJson(payload, messageBuffer);
 
   if(deserializationError) {
     Serial.println("Received non-parsable message from the server:");
-    Serial.println(rawMessage);
+    Serial.println(messageBuffer);
+    newMessage = false;
     return;
   }
 
@@ -53,15 +65,21 @@ void onMessageCallback(WebsocketsMessage websocketsMessage) {
     if(!pushChannel.equals(WS_CHANNEL)) {
       Serial.print("Received message on wrong channel: ");
       Serial.println(pushMessage);
+      newMessage = false;
       return;
     }
 
+    String decryptedPushMessage = decryptAes(decodeBase64(pushMessage));
+
     JsonDocument systemMessage;
-    DeserializationError systemMessageDeserializationError = deserializeJson(systemMessage, pushMessage);
+    DeserializationError systemMessageDeserializationError = deserializeJson(systemMessage, decryptedPushMessage);
 
     if(systemMessageDeserializationError) {
       Serial.println("Received non-parsable message from the server:");
       Serial.println(pushMessage);
+      Serial.println(decryptedPushMessage);
+      newMessage = false;
+      return;
     }
 
     String systemMessageType = systemMessage["type"].as<const char*>();
@@ -76,6 +94,8 @@ void onMessageCallback(WebsocketsMessage websocketsMessage) {
       parseAnimation(systemMessageData);
     }
   }
+
+  newMessage = false;
 }
 
 void setupWSConnection() {
@@ -94,5 +114,6 @@ void setupWSConnection() {
 void maintainWSConnection() {
   if(websocketsClient.available()) {
     websocketsClient.poll();
+    handleBufferedWebsocketsMessage();
   }
 }
