@@ -40,7 +40,6 @@ void setErrorAnimation() {
   }
 
   // Red pulse
-  // Blue pulse
   JsonDocument document;
   JsonObject data = document.to<JsonObject>();
   JsonObject animation = data.createNestedObject("animation");

@@ -18,8 +18,47 @@ void setup() {
 }
 
 void loop() {
+  int startFreeHeap = ESP.getFreeHeap();
   frameHandling();
+  int tempFreeHeap = ESP.getFreeHeap();
+  if(tempFreeHeap != startFreeHeap) {
+    Serial.println("Free Heap changed after frameHandling() call");
+    Serial.print("Start: ");
+    Serial.print(startFreeHeap);
+    Serial.print(" --- Now: ");
+    Serial.println(tempFreeHeap);
+  }
   maintainWSConnection();
+  tempFreeHeap = ESP.getFreeHeap();
+  if(tempFreeHeap != startFreeHeap) {
+    Serial.println("Free Heap changed after maintainWSConnection() call");
+    Serial.print("Start: ");
+    Serial.print(startFreeHeap);
+    Serial.print(" --- Now: ");
+    Serial.println(tempFreeHeap);
+  }
   checkError();
+  tempFreeHeap = ESP.getFreeHeap();
+  if(tempFreeHeap != startFreeHeap) {
+    Serial.println("Free Heap changed after checkError() call");
+    Serial.print("Start: ");
+    Serial.print(startFreeHeap);
+    Serial.print(" --- Now: ");
+    Serial.println(tempFreeHeap);
+  }
   render();
+  tempFreeHeap = ESP.getFreeHeap();
+  if(tempFreeHeap != startFreeHeap) {
+    Serial.println("Free Heap changed after render() call");
+    Serial.print("Start: ");
+    Serial.print(startFreeHeap);
+    Serial.print(" --- Now: ");
+    Serial.println(tempFreeHeap);
+  }
+
+  if(millis() % 1000 == 0) {
+    Serial.print("Free Heap: ");
+    Serial.println(ESP.getFreeHeap());
+    delay(1);
+  }
 }

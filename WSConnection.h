@@ -9,6 +9,8 @@ String messageBuffer = "";
 
 void onMessageCallback(WebsocketsMessage websocketsMessage) {
   messageBuffer = websocketsMessage.c_str();
+  Serial.print("Free Heap: ");
+  Serial.println(ESP.getFreeHeap());
 }
 
 void subscribeToChannel() {
@@ -32,8 +34,6 @@ void handleBufferedWebsocketsMessage() {
   if(messageBuffer.length() <= 0) {
     return;
   }
-
-  Serial.println(messageBuffer);
 
   JsonDocument payload;
   DeserializationError deserializationError = deserializeJson(payload, messageBuffer);
