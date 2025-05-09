@@ -3,72 +3,57 @@
 
 AESLib aesLib;
 
+#define KEY_BYTES 16
+#define IV_BYTES 16
+
 byte AES_KEY[KEY_BYTES];
 byte AES_IV[IV_BYTES];
 
 void setupEncryption() {
-  Serial.println("Key: ");
   for(int i = 0; i < KEY_BYTES; i++) {
     if(String(DEV_API_KEY).length() > i) {
       AES_KEY[i] = (byte) DEV_API_KEY[i];
     } else {
       AES_KEY[i] = 0x00;
     }
-
-    Serial.print(AES_KEY[i], HEX);
-    Serial.print(" ");
   }
-  Serial.println();
 
-Serial.println("IV: ");
   for(int i = 0; i < IV_BYTES; i++) {
     if(String(DEV_UID).length() > i) {
       AES_IV[i] = (byte) DEV_UID[i];
     } else {
       AES_IV[i] = 0x00;
     }
-
-    Serial.print(AES_IV[i], HEX);
-    Serial.print(" ");
   }
-  Serial.println();
 }
 
-String decodeBase64(String encoded) {
-  byte encodedBytes[encoded.length()];
-  encoded.getBytes(encodedBytes, encoded.length() + 1);
+String decrypt(String encrypted) {
+  byte encodedBytes[encrypted.length()];
+  encrypted.getBytes(encodedBytes, encrypted.length() + 1);
 
-  byte decodingBuffer[encoded.length() + 1];
+  byte decodingBuffer[2 * encrypted.length() + 1];
   int decodedLength = decode_base64(encodedBytes, decodingBuffer);
   decodingBuffer[decodedLength] = 0;
 
-  byte decoded[decodedLength + 1];
+  byte decoded[decodedLength];
   for(int i = 0; i < sizeof(decoded); i++) {
     decoded[i] = decodingBuffer[i];
   }
 
-  return String((char*) decoded);
-}
+  // -------------------------
 
-String decryptAes(String ciphertext) {
-  byte ciphertextBytes[ciphertext.length() + 1];
-  ciphertext.getBytes(ciphertextBytes, ciphertext.length() + 1);
+  byte decryptingBuffer[sizeof(decoded)];
+  int decryptedLength = aesLib.decrypt(decoded, sizeof(decoded), decryptingBuffer, AES_KEY, sizeof(AES_KEY), AES_IV);
 
-  byte decryptingBuffer[ciphertext.length()];
-  int decryptedLength = aesLib.decrypt(ciphertextBytes, sizeof(ciphertextBytes), decryptingBuffer, AES_KEY, sizeof(AES_KEY), AES_IV);
-
-  int length = sizeof(decryptingBuffer);
-  for(int i = sizeof(decryptingBuffer) - 1; i >= 0; i--) {
-    if(decryptingBuffer[i] == 0x0F) {
-      length--;
-    } else {
-      break;
-    }
-  }
+  // Remove PKCS#7 padding
+  byte paddingLength = decryptingBuffer[sizeof(decryptingBuffer) - 1];
+  int length = sizeof(decryptingBuffer) - paddingLength;
 
   byte plaintext[length + 1];
   for(int i = 0; i < sizeof(plaintext); i++) {
-    plaintext[i] = decryptingBuffer[i];
+    if(sizeof(decryptingBuffer) > i) {
+      plaintext[i] = decryptingBuffer[i];
+    }
   }
   plaintext[length] = 0;
 

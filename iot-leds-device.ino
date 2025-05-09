@@ -10,7 +10,6 @@
 
 void setup() {
   Serial.begin(115200);
-  setupEncryption();
   setupFrameHandling();
   setupRenderer();
   setupExceptionVisualizer();

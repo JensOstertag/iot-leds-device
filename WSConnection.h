@@ -5,12 +5,10 @@ using namespace websockets;
 WebsocketsClient websocketsClient;
 String uuid = "";
 
-bool newMessage = false;
-String messageBuffer;
+String messageBuffer = "";
 
 void onMessageCallback(WebsocketsMessage websocketsMessage) {
-  messageBuffer = String(websocketsMessage.c_str());
-  newMessage = true;
+  messageBuffer = websocketsMessage.c_str();
 }
 
 void subscribeToChannel() {
@@ -31,9 +29,11 @@ void subscribeToChannel() {
 }
 
 void handleBufferedWebsocketsMessage() {
-  if(!newMessage) {
+  if(messageBuffer.length() <= 0) {
     return;
   }
+
+  Serial.println(messageBuffer);
 
   JsonDocument payload;
   DeserializationError deserializationError = deserializeJson(payload, messageBuffer);
@@ -41,7 +41,7 @@ void handleBufferedWebsocketsMessage() {
   if(deserializationError) {
     Serial.println("Received non-parsable message from the server:");
     Serial.println(messageBuffer);
-    newMessage = false;
+    messageBuffer = "";
     return;
   }
 
@@ -65,20 +65,17 @@ void handleBufferedWebsocketsMessage() {
     if(!pushChannel.equals(WS_CHANNEL)) {
       Serial.print("Received message on wrong channel: ");
       Serial.println(pushMessage);
-      newMessage = false;
+      messageBuffer = "";
       return;
     }
 
-    String decryptedPushMessage = decryptAes(decodeBase64(pushMessage));
-
     JsonDocument systemMessage;
-    DeserializationError systemMessageDeserializationError = deserializeJson(systemMessage, decryptedPushMessage);
+    DeserializationError systemMessageDeserializationError = deserializeJson(systemMessage, pushMessage);
 
     if(systemMessageDeserializationError) {
       Serial.println("Received non-parsable message from the server:");
       Serial.println(pushMessage);
-      Serial.println(decryptedPushMessage);
-      newMessage = false;
+      messageBuffer = "";
       return;
     }
 
@@ -91,11 +88,15 @@ void handleBufferedWebsocketsMessage() {
     if(systemMessageType.equals("PING")) {
       refreshTimeout();
     } else if(systemMessageType.equals("ANIMATION")) {
-      parseAnimation(systemMessageData);
+      const char* deviceUid = systemMessageData["deviceUid"].as<const char*>();
+      if(String(deviceUid).equals(DEV_UID)) {
+        parseAnimation(systemMessageData);
+        refreshTimeout();
+      }
     }
   }
 
-  newMessage = false;
+  messageBuffer = "";
 }
 
 void setupWSConnection() {

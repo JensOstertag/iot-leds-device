@@ -5,21 +5,20 @@
 
 Adafruit_NeoPixel ledStrip(LED_AMOUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-int ad_Id;
+int ad_Id = -1;
 String ad_Type;
 int ad_DurationPerColor;
 int ad_ColorAmount;
 int ad_Colors[MAX_COLORS_PER_ANIMATION][3];
+bool ad_Power;
 
-float ad_CurrentColor;
+float ad_CurrentColor = 0;
 
 void setupRenderer() {
   ledStrip.begin();
   ledStrip.show();
   ledStrip.setBrightness(LED_BRIGHTNESS);
   ledStrip.clear();
-
-  ad_CurrentColor = 0;
 }
 
 void resetAnimation() {
@@ -27,6 +26,7 @@ void resetAnimation() {
   ad_Type = "";
   ad_DurationPerColor = 0;
   ad_ColorAmount = 0;
+  ad_Power = false;
   for(int i = 0; i < MAX_COLORS_PER_ANIMATION; i++) {
     for(int j = 0; j < 3; j++) {
       ad_Colors[i][j] = 0;
@@ -37,9 +37,14 @@ void resetAnimation() {
 }
 
 void parseAnimation(JsonObject payload) {
-  resetAnimation();
-
   JsonObject animationObject = payload["animation"];
+
+  int newAnimationId = animationObject["id"].as<int>();
+  if(newAnimationId == ad_Id) {
+    return;
+  }
+
+  resetAnimation();
 
   ad_Id = animationObject["id"].as<int>();
   ad_Type = String(animationObject["type"].as<const char*>());
@@ -65,6 +70,11 @@ void parseAnimation(JsonObject payload) {
 }
 
 void render() {
+  if(ad_Power == false) {
+    ledStrip.clear();
+    return;
+  }
+
   float oldColor = ad_CurrentColor;
   float progressDuringFrame = 0;
   if(ad_DurationPerColor != 0) {
