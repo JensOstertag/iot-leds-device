@@ -46,7 +46,7 @@ void parseAnimation(JsonObject payload) {
 
   resetAnimation();
 
-  ad_Id = animationObject["id"].as<int>();
+  ad_Id = newAnimationId;
   ad_Type = String(animationObject["type"].as<const char*>());
   ad_DurationPerColor = animationObject["durationPerColor"].as<float>();
   JsonArray colorObjects = animationObject["colors"];
@@ -54,6 +54,7 @@ void parseAnimation(JsonObject payload) {
   if(ad_ColorAmount > MAX_COLORS_PER_ANIMATION) {
     ad_ColorAmount = MAX_COLORS_PER_ANIMATION;
   }
+  ad_Power = payload["power"].as<bool>();
 
   int i = 0;
   for(JsonVariant colorObject : colorObjects) {
