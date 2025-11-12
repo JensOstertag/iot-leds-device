@@ -66,19 +66,3 @@ void setupExceptionVisualizer() {
 void refreshTimeout() {
   ev_LastPing = millis();
 }
-
-void checkError() {
-  unsigned long currentTime = millis();
-  if(ev_LastPing > currentTime) {
-    // Overflow
-    if(currentTime >= TIMEOUT_DURATION) {
-      setErrorAnimation();
-      return;
-    }
-  } else if(currentTime - ev_LastPing >= TIMEOUT_DURATION) {
-    setErrorAnimation();
-    return;
-  }
-
-  ev_ErrorAnimation = false;
-}

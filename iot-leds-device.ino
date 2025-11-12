@@ -4,6 +4,8 @@
 #include "FrameHandler.h"
 #include "AnimationData.h"
 #include "ExceptionVisualizer.h"
+#include "OTAHandler.h"
+#include "Animator.h"
 #include "WiFiConnection.h"
 #include "HTTPConnection.h"
 #include "APIHandler.h"
@@ -15,12 +17,7 @@ void setup() {
   setupExceptionVisualizer();
   setupWiFiConnection();
   setupApiHandler();
-}
-
-void animationLoop() {
-  frameHandler();
-  checkError();
-  render();
+  setupOtaHandler();
 }
 
 unsigned long lastAnimationFetch = 0;

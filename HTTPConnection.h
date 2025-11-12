@@ -32,6 +32,7 @@ String fetchHttps(String endpoint, String payload) {
   unsigned long startRequest = millis();
   while(client.available() == 0) {
     yield();
+    animationLoop();
     if(millis() - startRequest > 5000) {
       Serial.println("Could not connect to remote host (timeout)");
       client.stop();
@@ -80,6 +81,7 @@ String fetchHttps(String endpoint, String payload) {
       unsigned long startWait = millis();
       while(client.available() == 0) {
         yield();
+        animationLoop();
         if(millis() - startWait > 500) {
           Serial.println("Could not read next chunk (timeout)");
           client.stop();
@@ -130,6 +132,7 @@ String fetchHttp(String endpoint, String payload) {
   unsigned long startRequest = millis();
   while(client.available() == 0) {
     yield();
+    animationLoop();
     if(millis() - startRequest > 5000) {
       Serial.println("Could not connect to remote host (timeout)");
       client.stop();
@@ -178,6 +181,7 @@ String fetchHttp(String endpoint, String payload) {
       unsigned long startWait = millis();
       while(client.available() == 0) {
         yield();
+        animationLoop();
         if(millis() - startWait > 500) {
           Serial.println("Could not read next chunk (timeout)");
           client.stop();
