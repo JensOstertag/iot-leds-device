@@ -16,6 +16,7 @@ void setup() {
   setupRenderer();
   setupExceptionVisualizer();
   setupWiFiConnection();
+  setupHttpConnection();
   setupApiHandler();
   setupOtaHandler();
 }
