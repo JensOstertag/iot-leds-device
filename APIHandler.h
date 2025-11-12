@@ -11,7 +11,7 @@ void setupApiHandler() {
 void fetchAnimation() {
   int retries = 0;
   bool success = false;
-  while(retries < 3) {
+  while(!success && retries < 3) {
     if(retries != 0) {
       Serial.println("Retrying...");
     }
@@ -21,7 +21,7 @@ void fetchAnimation() {
     Serial.println("Received response from Web-API");
 
     if(responseRaw.length() <= 0) {
-      Serial.println("Received empty response from the server");
+      Serial.println("Received empty response from the server or error");
       continue;
     }
 
