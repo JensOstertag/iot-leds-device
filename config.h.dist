@@ -1,7 +1,6 @@
-#define WS_SECURE false
-#define WS_HOST "localhost"
-#define WS_PORT 5222
-#define WS_CHANNEL "iot-leds"
+#define WEB_HOST ""
+#define WEB_PORT 443
+#define WEB_SECURE true
 #define DEV_UID "DEV_UID"
 #define DEV_API_KEY "DEV_API_KEY"
 

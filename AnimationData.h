@@ -41,8 +41,17 @@ void parseAnimation(JsonObject payload) {
 
   int newAnimationId = animationObject["id"].as<int>();
   if(newAnimationId == ad_Id) {
+    Serial.print("Animation not changed, skipping update, old animation ID: ");
+    Serial.print(ad_Id);
+    Serial.print(", new animation ID: ");
+    Serial.println(newAnimationId);
     return;
   }
+
+  Serial.print("Updating animation, old animation ID: ");
+  Serial.print(ad_Id);
+  Serial.print(", new animation ID: ");
+  Serial.println(newAnimationId);
 
   resetAnimation();
 
